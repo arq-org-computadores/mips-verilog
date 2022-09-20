@@ -11,6 +11,7 @@ module ctrl(
         RegDst,
         ALUSrc,
         output reg MemWrite,
+        MemRead,
         RegWrite,
         Jal,
         Jump,
@@ -31,6 +32,7 @@ module ctrl(
                 RegDst <= 2'b01;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -45,6 +47,7 @@ module ctrl(
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -59,6 +62,7 @@ module ctrl(
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -73,6 +77,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -87,6 +92,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -100,8 +106,9 @@ module ctrl(
                 MemToReg <= 2'b00;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
-                MemWrite <= 1'b1;
-                RegWrite <= 1'b0;
+                MemWrite <= 1'b0;
+                MemRead <= 1'b0;
+                RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
                 Bgtz <= 1'b0;
@@ -115,6 +122,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -129,6 +137,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -143,6 +152,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b11;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -157,6 +167,7 @@ module ctrl(
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b1;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -171,6 +182,7 @@ module ctrl(
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b1;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
@@ -185,6 +197,7 @@ module ctrl(
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'bXX;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b1;
@@ -199,6 +212,7 @@ module ctrl(
                 RegDst <= 2'b10;
                 ALUSrc <= 2'bXX;
                 MemWrite <= 1'b0;
+                MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b1;
                 Jump <= 1'b1;
