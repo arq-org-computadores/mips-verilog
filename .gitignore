@@ -1,2 +1,6 @@
+# VSCode
 .vscode/
+
+# Local Directories/Files
 istyle-*/
+*.v.orig
