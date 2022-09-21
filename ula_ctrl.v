@@ -13,7 +13,7 @@ module ula_ctrl(
 			4'd3:  OPc = 4'b1001; /* or */
 			4'd4:  OPc = 4'b0001; /* sub */
 			4'd5:  OPc = 4'b1010; /* xor */
-            4'd6:  OPc = 4'b0100; /* logical shift left */
+           		4'd6:  OPc = 4'b0100; /* logical shift left */
 			4'd7:  OPc = 4'b1100; /* logical shift right */ 
 			4'd8:  OPc = 4'b1110; /* comparison */
 			4'd9:  OPc = 4'b1111; /* equal comparison */
