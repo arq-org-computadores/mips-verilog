@@ -247,7 +247,19 @@ module ctrl(
                 BranchNe &lt;= 1&apos;b0;
                 Branch &lt;= 1&apos;b0;
             end
-            6&apos;d10, 6&apos;d9: begin // slti, sltiu
+            6&apos;d10: begin // slti
+                ALUOp &lt;= 3&apos;b101;
+                MemToReg &lt;= 1&apos;b0;
+                RegDst &lt;= 2&apos;b00;
+                ALUSrc &lt;= 2&apos;b01;
+                MemWrite &lt;= 1&apos;b0;
+                MemRead &lt;= 1&apos;b0;
+                RegWrite &lt;= 1&apos;b1;
+                Jal &lt;= 1&apos;b0;
+                BranchNe &lt;= 1&apos;b0;
+                Branch &lt;= 1&apos;b0;
+            end
+            6&apos;d11: begin // sltiu
                 ALUOp &lt;= 3&apos;b101;
                 MemToReg &lt;= 1&apos;b0;
                 RegDst &lt;= 2&apos;b00;
@@ -1172,7 +1184,7 @@ endmodule</string>
         </entry>
         <entry>
           <string>Label</string>
-          <string>alu</string>
+          <string>ula</string>
         </entry>
         <entry>
           <string>externalInputs</string>
@@ -1180,7 +1192,7 @@ endmodule</string>
         </entry>
         <entry>
           <string>Code</string>
-          <string>module alu(
+          <string>module ula(
         input		[3:0]	OP,
         input		[31:0]	In1, In2,
         output reg	[31:0]	result,
@@ -1190,16 +1202,17 @@ endmodule</string>
 
     always @(*) begin
         case (OP)
-            4&apos;b0000: result &lt;= In1 + In2;				/* add */
-            4&apos;b1000: result &lt;= In1 &amp; In2;				/* and */
-            4&apos;b1011: result &lt;= ~(In1 | In2);				/* nor */
-            4&apos;b1001: result &lt;= In1 | In2;				/* or */
-            4&apos;b0001: result &lt;= In1 - In2;					/* sub */
-            4&apos;b1010: result &lt;= In1 ^ In2;				/* xor */
-            4&apos;b0100: result &lt;= In1 &lt;&lt; (In2);           /*logical shift left*/
-            4&apos;b1100: result &lt;= In1 &gt;&gt; (In2);				 /*logical shift right*/
-            4&apos;b1110: result &lt;= (In1 &gt; In2)? 32&apos;d1: 32&apos;d0 ;			 /* comparison*/
-            4&apos;b1111: result &lt;= (In1 == In2)? 32&apos;d1: 32&apos;d0 ;  		 /* equal comparison*/
+            4&apos;b0000: result &lt;= In1 + In2; /* add */
+            4&apos;b0001: result &lt;= In1 - In2; /* sub */
+            4&apos;b0010: result &lt;=  ($signed(In1) &lt; $signed(In2)) ? 32&apos;d1 : 32&apos;d0; /* slt */
+            4&apos;b0011: result &lt;= In1 &amp; In2; /* and */
+            4&apos;b0100: result &lt;= ~(In1 | In2); /* nor */
+            4&apos;b0101: result &lt;= In1 | In2; /* or */
+            4&apos;b0110: result &lt;= In1 ^ In2; /* xor */
+            4&apos;b0111: result &lt;= In1 &lt;&lt; (In2); /* shift left */
+            4&apos;b1000: result &lt;= In1 &gt;&gt;&gt; (In2); /* signed shift right*/
+            4&apos;b1001: result &lt;= In1 &gt;&gt; (In2); /* unsigned shift right*/
+            4&apos;b1010: result &lt;= (In1 &lt; In2) ? 32&apos;d1 : 32&apos;d0 ; /* sltu */	
 
             default: result &lt;= 0;
         endcase
@@ -1592,23 +1605,47 @@ endmodule</string>
         input wire [5:0] funct,
         input wire [2:0] ALUOp,
         output Jr,
+        Shamt,
         output reg [3:0] OP);
 
     reg [3:0] OPc;
 
     always @(*) begin
         case(funct)
-            6&apos;b100000, 6&apos;b100001: OPc = 4&apos;b0000; /* add */
-            6&apos;b100010, 6&apos;b100011: OPc = 4&apos;b0001; /* sub */
-            6&apos;b100100: OPc = 4&apos;b1000; /* and */
-            6&apos;b100111: OPc = 4&apos;b1011; /* nor */
-            6&apos;b100101: OPc = 4&apos;b1001; /* or */
-            6&apos;b100010, 6&apos;b100011: OPc = 4&apos;b0001; /* sub */
-            6&apos;b100110: OPc = 4&apos;b1010; /* xor */
-            6&apos;b000000, 6&apos;b000100: OPc = 4&apos;b0100; /* logical shift left */
-            6&apos;b000010, 6&apos;b000111, 6&apos;b000110: OPc = 4&apos;b1100; /* logical shift right */
-            6&apos;b101010, 6&apos;b101011: OPc = 4&apos;b1110; /* comparison */
-            default: OPc = 4&apos;b0000; /* defaults to add */
+            /* instrução add ou jr */
+            6&apos;b100000: OPc = 4&apos;b0000; /* operação alu: add */
+            
+            /* instrução sub */
+            6&apos;b100010: OPc = 4&apos;b0001; /* operação alu: sub */
+            
+            /* instrução and */
+            6&apos;b100100: OPc = 4&apos;b0011; /* operação alu: and */
+            
+            /* instrução nor */
+            6&apos;b100111: OPc = 4&apos;b0100; /* operação alu: nor */
+            
+            /* instrução or */
+            6&apos;b100101: OPc = 4&apos;b0101; /* operação alu: or */
+           
+            /* instrução xor */
+            6&apos;b100110: OPc = 4&apos;b0110; /* operação alu: xor */
+            
+            /* instrução sll ou sllv*/
+            6&apos;b000000, 6&apos;b000100: OPc = 4&apos;b0111; /* operação alu: shift left */
+            
+            /* instrução srl ou srlv*/
+            6&apos;b000010, 6&apos;b000110: OPc = 4&apos;b1001; /* operação alu: unsigned shift right */
+            
+            /* instrução sra ou srav */
+            6&apos;b000011, 6&apos;b000111: OPc = 4&apos;b1000; /* operação alu: signed shift right*/
+
+            /* instrução slt */
+            6&apos;b101010: OPc = 4&apos;b0010; /* operação alu: slt */
+
+            /* instrução sltu */
+            6&apos;b101011: OPc = 4&apos;b1010; /* operação alu: sltu */
+            
+            default: OPc = 4&apos;b0000;
         endcase
     end
 
@@ -1617,22 +1654,23 @@ endmodule</string>
             3&apos;b000: OP = 4&apos;b0000; /* add */
             3&apos;b001: OP = 4&apos;b0001; /* sub */
             3&apos;b010: OP = 4&apos;b1000; /* and */
-            3&apos;b011: OP = 4&apos;b1001; // or
-            3&apos;b100: OP = 4&apos;b1010; // xor
-            3&apos;b101: OP = 4&apos;b1110; // slt
-            3&apos;b110: OP = OPc; // check funct
-            3&apos;b111: OP = 4&apos;b0000; /* N/A, defaults to add */
-            default: OP = 4&apos;b0000; /* defaults to add */
+            3&apos;b011: OP = 4&apos;b1001; /* or */
+            3&apos;b100: OP = 4&apos;b1010; /* xor */
+            3&apos;b101: OP = 4&apos;b0010; /* slt */
+            3&apos;b110: OP = OPc; /* obtém do funct */
+            3&apos;b111: OP = 4&apos;b1010; /* sltu */
+            default: OP = 4&apos;b0000; /* padrão para add */
         endcase
     end
 
     assign Jr = (ALUOp == 3&apos;b110) ? ((funct == 6&apos;b001000) ? 1&apos;b1 : 1&apos;b0) : 1&apos;b0;
+    assign Shamt = (ALUOp == 3&apos;b110) ? ((funct == 6&apos;b000000 || funct == 6&apos;b000010 || funct == 6&apos;b000011) ? 1&apos;b1 : 1&apos;b0) : 1&apos;b0;
 
 endmodule</string>
         </entry>
         <entry>
           <string>externalOutputs</string>
-          <string>Jr,OP:4</string>
+          <string>Jr,Shamt,OP:4</string>
         </entry>
         <entry>
           <string>Width</string>
@@ -1649,7 +1687,7 @@ endmodule</string>
           <string>Op</string>
         </entry>
       </elementAttributes>
-      <pos x="80" y="-200"/>
+      <pos x="80" y="-180"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
@@ -2551,16 +2589,16 @@ endmodule</string>
       <elementName>Out</elementName>
       <elementAttributes>
         <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
           <string>Label</string>
           <string>instr</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>32</int>
-        </entry>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
         </entry>
       </elementAttributes>
       <pos x="-2820" y="-720"/>
@@ -3309,6 +3347,10 @@ endmodule</string>
       <p2 x="-2440" y="-560"/>
     </wire>
     <wire>
+      <p1 x="40" y="-180"/>
+      <p2 x="80" y="-180"/>
+    </wire>
+    <wire>
       <p1 x="-1600" y="180"/>
       <p2 x="-1580" y="180"/>
     </wire>
@@ -3371,10 +3413,6 @@ endmodule</string>
     <wire>
       <p1 x="60" y="-580"/>
       <p2 x="100" y="-580"/>
-    </wire>
-    <wire>
-      <p1 x="40" y="-200"/>
-      <p2 x="80" y="-200"/>
     </wire>
     <wire>
       <p1 x="-160" y="-200"/>
