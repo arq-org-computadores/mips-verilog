@@ -7,10 +7,10 @@
 module ctrl(
         input [5:0] opcode,
         output reg [2:0] ALUOp,
-        output reg [1:0] MemToReg,
-        RegDst,
+        output reg [1:0] RegDst,
         ALUSrc,
-        output reg MemWrite,
+        output reg MemToReg,
+        MemWrite,
         MemRead,
         RegWrite,
         Jal,
@@ -25,7 +25,7 @@ module ctrl(
             // sub, and, or, xor, nor, slt, sltu
             6'd0: begin
                 ALUOp <= 3'b110;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b01;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
@@ -38,7 +38,7 @@ module ctrl(
             end
             6'd4: begin // beq
                 ALUOp <= 3'b001;
-                MemToReg <= 2'bXX;
+                MemToReg <= 1'bX;
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
@@ -51,7 +51,7 @@ module ctrl(
             end
             6'd5: begin // bne
                 ALUOp <= 3'b001;
-                MemToReg <= 2'bXX;
+                MemToReg <= 1'bX;
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b00;
                 MemWrite <= 1'b0;
@@ -63,7 +63,7 @@ module ctrl(
             end
             6'd8: begin // addi
                 ALUOp <= 3'b000;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
@@ -75,7 +75,7 @@ module ctrl(
             end
             6'd9, 6'd11: begin // slti, sltiu
                 ALUOp <= 3'b101;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
@@ -87,7 +87,7 @@ module ctrl(
             end
             6'd12: begin // andi
                 ALUOp <= 3'b010;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
                 MemWrite <= 1'b0;
@@ -99,7 +99,7 @@ module ctrl(
             end
             6'd13: begin // ori
                 ALUOp <= 3'b011;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
                 MemWrite <= 1'b0;
@@ -111,7 +111,7 @@ module ctrl(
             end
             6'd14: begin // xori
                 ALUOp <= 3'b100;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b10;
                 MemWrite <= 1'b0;
@@ -123,7 +123,7 @@ module ctrl(
             end
             6'd15: begin // lui
                 ALUOp <= 3'b000;
-                MemToReg <= 2'b00;
+                MemToReg <= 1'b0;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b11;
                 MemWrite <= 1'b0;
@@ -135,7 +135,7 @@ module ctrl(
             end
             6'd35: begin // lw
                 ALUOp <= 3'b000;
-                MemToReg <= 2'b01;
+                MemToReg <= 1'b1;
                 RegDst <= 2'b00;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b0;
@@ -147,7 +147,7 @@ module ctrl(
             end
             6'd43: begin // sw
                 ALUOp <= 3'b000;
-                MemToReg <= 2'bXX;
+                MemToReg <= 1'bX;
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'b01;
                 MemWrite <= 1'b1;
@@ -159,7 +159,7 @@ module ctrl(
             end
             6'd2: begin // j
                 ALUOp <= 3'bXXX;
-                MemToReg <= 2'bXX;
+                MemToReg <= 1'bX;
                 RegDst <= 2'bXX;
                 ALUSrc <= 2'bXX;
                 MemWrite <= 1'b0;
@@ -172,7 +172,7 @@ module ctrl(
             end
             6'd3: begin // jal
                 ALUOp <= 3'bXXX;
-                MemToReg <= 2'bXX;
+                MemToReg <= 1'bX;
                 RegDst <= 2'b10;
                 ALUSrc <= 2'bXX;
                 MemWrite <= 1'b0;
