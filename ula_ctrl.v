@@ -27,20 +27,29 @@ module ula_ctrl(
             /* instrução xor */
             6'b100110: OPc = 4'b0110; /* operação alu: xor */
             
-            /* instrução sll ou sllv*/
-            6'b000000, 6'b000100: OPc = 4'b0111; /* operação alu: shift left */
+            /* instrução sll*/
+            6'b000000: OPc = 4'b0111; /* operação alu: shift left com shamt */
+
+            /* instrução sllv */
+            6'b000100: OPc = 4'b1000; /* operação alu: shift left */
             
-            /* instrução srl ou srlv*/
-            6'b000010, 6'b000110: OPc = 4'b1001; /* operação alu: unsigned shift right */
+            /* instrução srl */
+            6'b000010:  OPc = 4'b1001; /* operação alu: unsigned shift right  com shamt */
+
+            /* instrução srlv */
+            6'b000110: OPc = 4'b1010; /* operação alu: unsigned shift right */
             
-            /* instrução sra ou srav */
-            6'b000011, 6'b000111: OPc = 4'b1000; /* operação alu: signed shift right*/
+            /* instrução sra */ 
+            6'b000011: OPc = 4'b1100; /* operação alu: signed shift right com shmat*/
+
+            /* instrução srav */
+            6'b000111: OPc = 4'b1101; /* operação alu: signed shift right */
 
             /* instrução slt */
-            6'b101010: OPc = 4'b0010; /* operação alu: slt */
+            6'b101010: OPc = 4'b1110; /* operação alu: slt */
 
             /* instrução sltu */
-            6'b101011: OPc = 4'b1010; /* operação alu: sltu */
+            6'b101011: OPc = 4'b1111; /* operação alu: sltu */
             
             default: OPc = 4'b0000;
         endcase
@@ -50,12 +59,12 @@ module ula_ctrl(
         case(ALUOp)
             3'b000: OP = 4'b0000; /* add */
             3'b001: OP = 4'b0001; /* sub */
-            3'b010: OP = 4'b1000; /* and */
-            3'b011: OP = 4'b1001; /* or */
-            3'b100: OP = 4'b1010; /* xor */
-            3'b101: OP = 4'b0010; /* slt */
+            3'b010: OP = 4'b0011; /* and */
+            3'b011: OP = 4'b0101; /* or */
+            3'b100: OP = 4'b0110; /* xor */
             3'b110: OP = OPc; /* obtém do funct */
-            3'b111: OP = 4'b1010; /* sltu */
+            3'b101: OP = 4'b1110; /* slt */
+            3'b111: OP = 4'b1111; /* sltu */
             default: OP = 4'b0000; /* padrão para add */
         endcase
     end
