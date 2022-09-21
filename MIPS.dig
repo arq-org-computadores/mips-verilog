@@ -247,7 +247,7 @@ module ctrl(
                 BranchNe &lt;= 1&apos;b0;
                 Branch &lt;= 1&apos;b0;
             end
-            6&apos;d9, 6&apos;d11: begin // slti, sltiu
+            6&apos;d10, 6&apos;d9: begin // slti, sltiu
                 ALUOp &lt;= 3&apos;b101;
                 MemToReg &lt;= 1&apos;b0;
                 RegDst &lt;= 2&apos;b00;

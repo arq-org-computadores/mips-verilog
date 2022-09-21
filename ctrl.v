@@ -73,7 +73,7 @@ module ctrl(
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
-            6'd9, 6'd11: begin // slti, sltiu
+            6'd10, 6'd9: begin // slti, sltiu
                 ALUOp <= 3'b101;
                 MemToReg <= 1'b0;
                 RegDst <= 2'b00;
