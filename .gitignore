@@ -4,3 +4,4 @@
 # Local Directories/Files
 istyle-*/
 *.v.orig
+digital/tests
