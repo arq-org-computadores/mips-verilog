@@ -15,10 +15,7 @@ module ctrl(
         RegWrite,
         Jal,
         Jump,
-        Bgtz,
-        Bltz,
-        Blez,
-        Brchne,
+        BranchNe,
         Branch);
 
     always @(*)
@@ -36,9 +33,7 @@ module ctrl(
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd4: begin // beq
@@ -51,9 +46,7 @@ module ctrl(
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b1;
             end
             6'd5: begin // bne
@@ -65,10 +58,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b1;
+                BranchNe <= 1'b1;
                 Branch <= 1'b0;
             end
             6'd8: begin // addi
@@ -80,10 +70,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd9, 6'd11: begin // slti, sltiu
@@ -95,10 +82,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd12: begin // andi
@@ -110,10 +94,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd13: begin // ori
@@ -125,10 +106,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd14: begin // xori
@@ -140,10 +118,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd15: begin // lui
@@ -155,10 +130,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd35: begin // lw
@@ -170,10 +142,7 @@ module ctrl(
                 MemRead <= 1'b1;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd43: begin // sw
@@ -185,10 +154,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
-                Jump <= 1'b0;
-                Bgtz <= 1'b0;
-                Blez <= 1'b0;
-                Brchne <= 1'b0;
+                BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
             6'd2: begin // j
@@ -201,9 +167,7 @@ module ctrl(
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
                 Jump <= 1'b1;
-                Bgtz <= 1'bX;
-                Blez <= 1'bX;
-                Brchne <= 1'bX;
+                BranchNe <= 1'bX;
                 Branch <= 1'bX;
             end
             6'd3: begin // jal
@@ -216,9 +180,7 @@ module ctrl(
                 RegWrite <= 1'b1;
                 Jal <= 1'b1;
                 Jump <= 1'b1;
-                Bgtz <= 1'bX;
-                Blez <= 1'bX;
-                Brchne <= 1'bX;
+                BranchNe <= 1'bX;
                 Branch <= 1'bX;
             end
         endcase

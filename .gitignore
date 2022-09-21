@@ -5,3 +5,5 @@
 istyle-*/
 *.v.orig
 digital/tests
+*.out
+*.dig
