@@ -1269,7 +1269,7 @@ endmodule</string>
     reg [31:0] instructions [255:0];
 
     initial begin
-        $readmemb(&quot;/home/moesiof/UFRPE/2021/2/COD/mips-verilog/tests/jal_j_addi_jr.list&quot;, instructions);
+        $readmemb(&quot;/path/to/instructions.list&quot;, instructions);
     end
 
     always @ (address) begin
