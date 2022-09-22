@@ -58,6 +58,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b1;
                 Branch <= 1'b0;
             end
@@ -70,6 +71,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -82,6 +84,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -94,6 +97,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -106,6 +110,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -118,6 +123,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -130,6 +136,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -142,6 +149,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -154,6 +162,7 @@ module ctrl(
                 MemRead <= 1'b1;
                 RegWrite <= 1'b1;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end
@@ -166,6 +175,7 @@ module ctrl(
                 MemRead <= 1'b0;
                 RegWrite <= 1'b0;
                 Jal <= 1'b0;
+                Jump <= 1'b0;
                 BranchNe <= 1'b0;
                 Branch <= 1'b0;
             end

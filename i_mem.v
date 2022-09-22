@@ -10,7 +10,7 @@ module i_mem(
     end
 
     always @ (address) begin
-        i_out = instructions[address];
+        i_out = instructions[address >> 2]; /* Valores são múltiplos de 4 */
     end
 
 endmodule
