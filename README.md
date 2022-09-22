@@ -131,7 +131,39 @@ endmodule
 | **Shamt** (saída, 1 bit) | Indica se o primeiro valor da ULA deve ser o campo *shamt* |
 | **OP** (saída, 4 bits) | Indica a operação realizada pela ULA |
 
+| Valores do OP (binário) | Operação |
+| --- | --- |
+| $0000$ | **add** |
+| $0001$ | **sub** |
+| $0011$ | **and** |
+| $0100$ | **nor** |
+| $0101$ | **or** |
+| $0110$ | **xor** |
+| $0111$ | **shift left com shamt** |
+| $1000$ | **shift left** |
+| $1001$ | **unsigned shift right com shamt** |
+| $1010$ | **unsigned shift right** |
+| $1100$ | **signed shift right com shamt** |
+| $1101$ | **signed shift right** |
+| $1110$ | **slt** |
+| $1111$ | **sltu** | 
+
 ### Unidade Lógica e Aritmética (ULA/ALU)
+
+```verilog
+module ula(
+        input [3:0]	OP,
+        input [31:0] In1, In2,
+        output reg [31:0] result,
+        output Zero_flag);
+
+    assign Zero_flag = (result == 0);
+
+    // ...
+    // ...
+    
+endmodule
+```
 
 ---
 *Requisitos e mais informações sobre o projeto podem ser encontradas na pasta de [documentação](docs) desse repositório.*
