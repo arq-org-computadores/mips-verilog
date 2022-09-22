@@ -6,7 +6,7 @@ Implementação de um sub-conjunto das instruções do MIPS 32 em Verilog. Esse 
 
 # Descrição do Projeto no Digital
 
-Inicialmente, definimos as entradas CLOCK (**CLK**) e RESET (**RST**), e as saídas **PC**, **ALUResult** e **MemData**. Esses são as entradas e saídas necessárias para a produção do Top-Level MIPS (que foi gerada diretamente do Digital).
+Inicialmente, definimos as entradas CLOCK (**CLK**) e RESET (**RST**), e as saídas **PC**, **ALUResult** e **MemData**. Esses são as entradas e saídas necessárias para a produção do Top-Level MIPS (que foi gerada diretamente do Digital e reorganizado pelos membros da equipe).
 
 ![IO](imgs/Input-Output.png)
 
@@ -16,13 +16,27 @@ Em seguida, adicionamos os 7 módulos Verilog solicitados no documento de requis
 
 A partir daí, separamos os campos das instruções e iniciamos a definição das entradas que devem ser recebidas por cada um dos módulos.
 
-Para as instruções, simplesmente separamos os campos utilizando Mergers/Splitters (em Verilog, simplesmente a concatenação e seleção dos bits do fio). Nessa etapa, também já calculamos algumas extensões para o campo imediato (zero-extension e sign-extension) e shamt (sign-extension).
+Para as instruções, simplesmente separamos os campos utilizando Mergers/Splitters (em Verilog, simplesmente a concatenação e seleção dos bits do fio). Nessa etapa, também já calculamos algumas extensões para o campo imediato (zero-extension e sign-extension) e **shamt** (sign-extension).
 
 ![Instructions](imgs/Parse-Instructions.png)
 
 Para o regfile, os registradores de leitura são sempre determinados pelo *rs* e *rt*. Já o registrador de saída precisa ser selecionado através de um multiplexador e do sinal de controle emitido pela unidade de controle. Por último, o valor a ser escrito no registrador com endereço *RegWAddr* é selecionado através do sinal de controle *Jal* emitido pela unidade de controle (caso seja uma instrução jal, devemos salvar o PC + 4).
 
 ![regfile](imgs/Input-Regfile.png)
+
+Para a ALU, utilizamos 2 multiplexadores e Merge/Splitter para definição das entradas. Primeiro, definimos que a entrada **In1** pode ser ou o valor lido do registrador 1 ou o **shamt**. Assim, usamos um sinal de controle emitido pelo controle da ula nessa seleção. Já para selecionar a entrada **In2**, utilizamos o sinal de controle *ALUSrc* emitido pela unidade de controle.
+
+![ALU](imgs/ALU.png)
+
+Para a memória de dados, simplesmente utilizamos os valores resultantes de outos módulos para definição do dado a ser escrito e do endereço da escrita.
+
+![DMEM](imgs/DMEM.png)
+
+Dessa forma, apenas nos restam 2 atividades: definir o valor a ser guardado no **ALUMem** (determina o valor que deve ser escrito em um registrador); atualizar o PC para execução da próxima instrução.
+
+![ALUMEM](imgs/ALUMEM.png)
+
+![PCUpdate](imgs/PCUpdate.png)
 
 # Principais Módulos
 
