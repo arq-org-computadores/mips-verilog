@@ -106,7 +106,30 @@ endmodule
 
 ### Unidade de Controle (ctrl)
 
+| | |
+| --- | --- |
+| **opcode** (entrada, 6 bits)| Opcode da instrução a ser executada.
+| **ALUOp** (saída, 3 bits) | Determina a operação que deve ser realizada pela ALU (passada para o controle da ULA que deve decidir especificamente as operações) |
+| **RegDst** (saída, 2 bits) | Identifica o registrador destino de uma operação. Em resumo: $0$ devemos escrever em *rt*; $1$ devemos escrever em *rd*; $2$ devemos escrever no registrador 31 (*ra*); $3$ não utilizado, escrever no registrador 0.
+| **ALUSrc** (saída, 2 bits) | Determina a origem do segundo valor recebido pela ALU. |
+| **MemToReg** (saída, 1 bit) | Determina se o conteúdo a ser escrito no registrador destino vem da memória. |
+| **MemWrite** (saída, 1 bit) | Determina se um valor deve ser escrito na memória. |
+| **MemRead** (saída, 1 bit) | Determina se um valor deve ser lido da memória. |
+| **RegWrite** (saída, 1 bit) | Determina se um valor deve ser escrito no regfile. |
+| **Jal** (saída, 1 bit) | Indica se essa é uma instrução *jal*. |
+| **Jump** (saída, 1 bit) | Indica se essa é uma instrução *j*. |
+| **BranchNe** (saída, 1 bit) | Indica se essa é uma instrução de *bne* .|
+| **Branch** (saída, 1 bit) | Indica se essa é uma instrução de *beq*. |
+
 ### Controle da ULA (ula_ctrl)
+
+| | |
+| --- | --- |
+| **funct** (entrada, 6 bits) | Campo *funct* da instrução. |
+| **ALUOp** (entrada, 3 bits) | Flags da unidade de controle indicando a operação a ser realizada.
+| **Jr** (saída, 1 bit) | Indica se essa é uma instrução *jr*. |
+| **Shamt** (saída, 1 bit) | Indica se o primeiro valor da ULA deve ser o campo *shamt* |
+| **OP** (saída, 4 bits) | Indica a operação realizada pela ULA |
 
 ### Unidade Lógica e Aritmética (ULA/ALU)
 
