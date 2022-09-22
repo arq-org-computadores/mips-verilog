@@ -1,12 +1,32 @@
 # MIPS Verilog
 
-Implementação de um sub-conjunto das instruções do MIPS 32 em Verilog.
+Implementação de um sub-conjunto das instruções do MIPS 32 em Verilog. Esse documento descreve alguns detalhes da implementação bem como a conexão dos vários módulos.
 
 ![MIPS](imgs/MIPS.png)
 
-## Principais Módulos
+# Descrição do Projeto no Digital
 
-### MIPS Top-level
+Inicialmente, definimos as entradas CLOCK (**CLK**) e RESET (**RST**), e as saídas **PC**, **ALUResult** e **MemData**. Esses são as entradas e saídas necessárias para a produção do Top-Level MIPS (que foi gerada diretamente do Digital).
+
+![IO](imgs/Input-Output.png)
+
+Em seguida, adicionamos os 7 módulos Verilog solicitados no documento de requisitos (OBS:. o módulo Top-Level foi gerado de forma automático pelo digital e testado/compilado posteriormente com o Icarus Verilog). Para cada uma das entradas e saídas, adicionamos um *fio nomeado* (para que possa ser utilizado posteriormente em outras partes).
+
+![Modules](imgs/Verilog-Modules.png)
+
+A partir daí, separamos os campos das instruções e iniciamos a definição das entradas que devem ser recebidas por cada um dos módulos.
+
+Para as instruções, simplesmente separamos os campos utilizando Mergers/Splitters (em Verilog, simplesmente a concatenação e seleção dos bits do fio). Nessa etapa, também já calculamos algumas extensões para o campo imediato (zero-extension e sign-extension) e shamt (sign-extension).
+
+![Instructions](imgs/Parse-Instructions.png)
+
+Para o regfile, os registradores de leitura são sempre determinados pelo *rs* e *rt*. Já o registrador de saída precisa ser selecionado através de um multiplexador e do sinal de controle emitido pela unidade de controle. Por último, o valor a ser escrito no registrador com endereço *RegWAddr* é selecionado através do sinal de controle *Jal* emitido pela unidade de controle (caso seja uma instrução jal, devemos salvar o PC + 4).
+
+![regfile](imgs/Input-Regfile.png)
+
+# Principais Módulos
+
+## MIPS Top-level
 
 O Módulo MIPS contém a organização de todos os outros módulos (além da definição de módulos auxiliares) abstraindo o funcionamento do processador MIPS monociclo proposto.
 
@@ -18,7 +38,7 @@ O Módulo MIPS contém a organização de todos os outros módulos (além da def
 | **ALUResult** (saída, 32-bits) | Indica o valor produzido na saída da ALU |
 | **MemData** (saída, 32-bits) | Indica o valor de saída da memória de dados |
 
-### Program Counter (PC)
+## Program Counter (PC)
 
 O módulo PC é extremamente simples e é responsável pelas atualizações do PC ao longo da execução do processador.
 
@@ -34,7 +54,7 @@ end
 endmodule
 ```
 
-### Register File (regfile)
+## Register File (regfile)
 
 O módulo regfile é responsável por armazenar os 32 registradores disponíveis aos processadores MIPS. Inicialmente, todos os registradores possuem valor $0$ e qualquer registrador pode ser acessado.
 
@@ -56,7 +76,7 @@ module regfile (
 endmodule
 ```
 
-### Instruction Memory (i_mem) e Data Memory (d_mem)
+## Instruction Memory (i_mem) e Data Memory (d_mem)
 
 Ambos os módulos são implementadas como RAM's assíncronas simples que servem para o armazenamento de instruções e dados, respectivamente.
 
@@ -104,7 +124,7 @@ module d_mem(
 endmodule
 ```
 
-### Unidade de Controle (ctrl)
+## Unidade de Controle (ctrl)
 
 | | |
 | --- | --- |
@@ -148,7 +168,7 @@ endmodule
 | $1110$ | **slt** |
 | $1111$ | **sltu** | 
 
-### Unidade Lógica e Aritmética (ULA/ALU)
+## Unidade Lógica e Aritmética (ULA/ALU)
 
 ```verilog
 module ula(

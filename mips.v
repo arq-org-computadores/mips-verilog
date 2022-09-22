@@ -1,14 +1,11 @@
-module Mux_4x1_NBits #(
-        parameter Bits = 2
-    )
-    (
+module Mux_4x1_NBits #(parameter Bits = 2)(
         input [1:0] sel,
         input [(Bits - 1):0] in_0,
         input [(Bits - 1):0] in_1,
         input [(Bits - 1):0] in_2,
         input [(Bits - 1):0] in_3,
-        output reg [(Bits - 1):0] out
-    );
+        output reg [(Bits - 1):0] out);
+
     always @ (*) begin
         case (sel)
             2'h0: out = in_0;
@@ -21,15 +18,12 @@ module Mux_4x1_NBits #(
     end
 endmodule
 
-module Mux_2x1_NBits #(
-        parameter Bits = 2
-    )
-    (
+module Mux_2x1_NBits #(parameter Bits = 2)(
         input [0:0] sel,
         input [(Bits - 1):0] in_0,
         input [(Bits - 1):0] in_1,
-        output reg [(Bits - 1):0] out
-    );
+        output reg [(Bits - 1):0] out);
+
     always @ (*) begin
         case (sel)
             1'h0: out = in_0;
@@ -48,14 +42,10 @@ module adder32_0(
     assign out = a + b;
 endmodule
 
-module DIG_BitExtender #(
-        parameter inputBits = 2,
-        parameter outputBits = 4
-    )
-    (
+module DIG_BitExtender #(parameter inputBits = 2, parameter outputBits = 4)(
         input [(inputBits-1):0] in,
-        output [(outputBits - 1):0] out
-    );
+        output [(outputBits - 1):0] out);
+
     assign out = {{(outputBits - inputBits){in[inputBits - 1]}}, in};
 endmodule
 
@@ -82,12 +72,15 @@ module mips (
         output [31:0] ALUResult,
         output [31:0] MemData
     );
+
+    /* Definições dos fios */
+
     wire [31:0] PC_temp;
     wire [31:0] NextPC;
-    wire [5:0] opcode;
     wire [2:0] ALUOp;
     wire [1:0] RegDst;
     wire [1:0] ALUSrc;
+
     wire MemToReg;
     wire MemWrite;
     wire MemRead;
@@ -96,39 +89,88 @@ module mips (
     wire Jump;
     wire BranchNe;
     wire Branch;
+    wire PCSrc;
+    wire JumpRegister;
+
     wire [31:0] instr;
+    wire [5:0] opcode;
     wire [25:0] j_address;
     wire [15:0] immediate;
-    wire [4:0] s0;
-    wire [4:0] s1;
     wire [5:0] funct;
     wire [4:0] shamt;
     wire [4:0] rd;
-    wire [4:0] RegWAddr;
-    wire [31:0] RegWD;
-    wire [31:0] RegData1;
+    wire [31:0] sign_imm;
+    wire [31:0] zero_imm;
+    wire [31:0] upper_imm;
+    wire [31:0] sign_shamt;
+
+    wire [4:0] s0;
+    wire [4:0] s1;
     wire [31:0] s2;
-    wire [31:0] ALUResult_temp;
-    wire [31:0] MemData_temp;
-    wire PCSrc;
-    wire [31:0] PCPlus4;
-    wire [31:0] PCBranch;
-    wire [31:0] NPC0;
-    wire [31:0] PCJump;
-    wire [31:0] NPC1;
-    wire JumpRegister;
-    wire [31:0] ALUMem;
+
     wire [3:0] Op;
     wire [31:0] In1;
     wire [31:0] In2;
+
+    wire [4:0] RegWAddr;
+    wire [31:0] RegWD;
+    wire [31:0] RegData1;
+    wire [31:0] ALUResult_temp;
+    wire [31:0] MemData_temp;
+
+    wire [31:0] PCPlus4;
+    wire [31:0] PCBranch;
+    wire [31:0] PCJump;
+    wire [31:0] NPC0;
+    wire [31:0] NPC1;
+    wire [31:0] ALUMem;
+
     wire zero;
     wire UseShamt;
+
     wire [27:0] s_j_addr;
-    wire [31:0] sign_imm;
-    wire [31:0] zero_imm;
     wire [31:0] branch_offset;
-    wire [31:0] upper_imm;
-    wire [31:0] sign_shamt;
+
+    /* Cálculos dos valores que devem ser colocados nos fios */
+
+    // Fios relacionados com instruções (campos, etc)
+    assign opcode = instr[31:26];
+    assign immediate = j_address[15:0];
+    assign funct = immediate[5:0];
+    assign shamt = immediate[10:6];
+    assign rd = immediate[15:11];
+    assign j_address = instr[25:0];
+    assign s_j_addr[1:0] = 2'b0;
+    assign s_j_addr[27:2] = j_address;
+
+    assign zero_imm[15:0] = immediate;
+    assign zero_imm[31:16] = 16'b0;
+
+    assign upper_imm[15:0] = 16'b0;
+    assign upper_imm[31:16] = immediate;
+
+    // PCSrc, determina se devemos executar uma instrução de branch
+    assign PCSrc = ((~ zero & BranchNe) | (zero & Branch));
+
+    // Variáveis constantes utilizadas para calcular o RegAddr
+    assign s0 = j_address[20:16];
+    assign s1 = j_address[25:21];
+
+    // Cálculo do PCJump
+    assign PCJump[31:28] = PCPlus4[31:28];
+    assign PCJump[27:0] = s_j_addr;
+
+    // Atualização do PC (saída)
+    assign PC = PC_temp;
+
+    // Atualização do resultado da ULA (saída)
+    assign ALUResult = ALUResult_temp;
+
+    // Atualização da Memória de Dados (saída)
+    assign MemData = MemData_temp;
+
+    /* Istanciação dos módulos */
+
     // regfile
     regfile regfile_i0 (
                 .Clock( CLK ),
@@ -141,6 +183,7 @@ module mips (
                 .ReadData1( RegData1 ),
                 .ReadData2( s2 )
             );
+
     // d_mem
     d_mem d_mem_i1 (
               .MemWrite( MemWrite ),
@@ -149,10 +192,8 @@ module mips (
               .WriteData( s2 ),
               .ReadData( MemData_temp )
           );
-    Mux_4x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_4x1_NBits_i2 (
+
+    Mux_4x1_NBits #(.Bits(32)) Mux_4x1_NBits_i2 (
                       .sel( ALUSrc ),
                       .in_0( s2 ),
                       .in_1( sign_imm ),
@@ -160,10 +201,8 @@ module mips (
                       .in_3( upper_imm ),
                       .out( In2 )
                   );
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i3 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i3 (
                       .sel( UseShamt ),
                       .in_0( RegData1 ),
                       .in_1( sign_shamt ),
@@ -177,29 +216,22 @@ module mips (
             .result( ALUResult_temp ),
             .Zero_flag( zero )
         );
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i5 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i5 (
                       .sel( MemToReg ),
                       .in_0( ALUResult_temp ),
                       .in_1( MemData_temp ),
                       .out( ALUMem )
                   );
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i6 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i6 (
                       .sel( JumpRegister ),
                       .in_0( NPC1 ),
                       .in_1( ALUMem ),
                       .out( NextPC )
                   );
-    assign PCSrc = ((~ zero & BranchNe) | (zero & Branch));
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i7 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i7 (
                       .sel( Jal ),
                       .in_0( ALUMem ),
                       .in_1( PCPlus4 ),
@@ -211,19 +243,20 @@ module mips (
            .NextPC( NextPC ),
            .PC( PC_temp )
        );
+
     // i_mem
     i_mem i_mem_i9 (
               .address( PC_temp ),
               .i_out( instr )
           );
+
     // adder32_0
     adder32_0 adder32_0_i10 (
                   .a( PC_temp ),
                   .b( 32'b100 ),
                   .out( PCPlus4 )
               );
-    assign j_address = instr[25:0];
-    assign opcode = instr[31:26];
+
     // ctrl
     ctrl ctrl_i11 (
              .opcode( opcode ),
@@ -239,28 +272,12 @@ module mips (
              .BranchNe( BranchNe ),
              .Branch( Branch )
          );
-    assign s_j_addr[1:0] = 2'b0;
-    assign s_j_addr[27:2] = j_address;
-    assign immediate = j_address[15:0];
-    assign s0 = j_address[20:16];
-    assign s1 = j_address[25:21];
-    assign PCJump[31:28] = PCPlus4[31:28];
-    assign PCJump[27:0] = s_j_addr;
-    DIG_BitExtender #(
-                        .inputBits(16),
-                        .outputBits(32)
-                    )
-                    DIG_BitExtender_i12 (
+
+    DIG_BitExtender #(.inputBits(16), .outputBits(32)) DIG_BitExtender_i12 (
                         .in( immediate ),
                         .out( sign_imm )
                     );
-    assign zero_imm[15:0] = immediate;
-    assign zero_imm[31:16] = 16'b0;
-    assign upper_imm[15:0] = 16'b0;
-    assign upper_imm[31:16] = immediate;
-    assign funct = immediate[5:0];
-    assign shamt = immediate[10:6];
-    assign rd = immediate[15:11];
+
     // ula_ctrl
     ula_ctrl ula_ctrl_i13 (
                  .funct( funct ),
@@ -269,10 +286,8 @@ module mips (
                  .Shamt( UseShamt ),
                  .OP( Op )
              );
-    Mux_4x1_NBits #(
-                      .Bits(5)
-                  )
-                  Mux_4x1_NBits_i14 (
+
+    Mux_4x1_NBits #(.Bits(5)) Mux_4x1_NBits_i14 (
                       .sel( RegDst ),
                       .in_0( s0 ),
                       .in_1( rd ),
@@ -280,45 +295,38 @@ module mips (
                       .in_3( 5'b0 ),
                       .out( RegWAddr )
                   );
-    DIG_BitExtender #(
-                        .inputBits(5),
-                        .outputBits(32)
-                    )
-                    DIG_BitExtender_i15 (
+
+    DIG_BitExtender #(.inputBits(5), .outputBits(32)) DIG_BitExtender_i15 (
                         .in( shamt ),
                         .out( sign_shamt )
                     );
+
     // shifter32
     shifter32 shifter32_i16 (
                   .a( sign_imm ),
                   .shamt( 32'b10 ),
                   .out( branch_offset )
               );
+
     // adder32_1
     adder32_1 adder32_1_i17 (
                   .a( PCPlus4 ),
                   .b( branch_offset ),
                   .out( PCBranch )
               );
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i18 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i18 (
                       .sel( PCSrc ),
                       .in_0( PCPlus4 ),
                       .in_1( PCBranch ),
                       .out( NPC0 )
                   );
-    Mux_2x1_NBits #(
-                      .Bits(32)
-                  )
-                  Mux_2x1_NBits_i19 (
+
+    Mux_2x1_NBits #(.Bits(32)) Mux_2x1_NBits_i19 (
                       .sel( Jump ),
                       .in_0( NPC0 ),
                       .in_1( PCJump ),
                       .out( NPC1 )
                   );
-    assign PC = PC_temp;
-    assign ALUResult = ALUResult_temp;
-    assign MemData = MemData_temp;
+
 endmodule
